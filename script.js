@@ -192,7 +192,7 @@ headerObserver.observe(header);
 
 const sections = document.querySelectorAll('.section');
 sections.forEach(section => {
-  section.classList.add('section--hidden');
+  // section.classList.add('section--hidden');
 });
 
 const revealSection = function (entries, observer) {
@@ -220,7 +220,7 @@ const imgTarget = document.querySelectorAll('img[data-src]');
 
 const loadImg = function (entries, observer) {
   const [entry] = entries;
-  console.log(entry);
+  // console.log(entry);
 
   if (!entry.isIntersecting) return;
 
@@ -244,8 +244,94 @@ const imgObserver = new IntersectionObserver(loadImg, {
 
 imgTarget.forEach(img => imgObserver.observe(img));
 
-console.log(imgTarget);
+// console.log(imgTarget);
 
+/////////////////////////////////////////////////////
+//Next slide
+const slider = function () {
+  const btnright = document.querySelector('.slider__btn--right');
+  const btnleft = document.querySelector('.slider__btn--left');
+  const slides = document.querySelectorAll('.slide');
+  const slider = document.querySelector('.slider');
+  const dotContainer = document.querySelector('.dots');
+  // console.log(btnright, btnleft);
+
+  let currSlide = 0;
+
+  const maxSlide = slides.length;
+
+  //0%, 100%, 200%, 300%
+
+  const createDots = function () {
+    slides.forEach((_, i) => {
+      dotContainer.insertAdjacentHTML(
+        'beforeend',
+        `<button class="dots__dot" data-slide="${i}"></button>`
+      );
+    });
+  };
+
+  const activateDots = function (slide) {
+    document.querySelectorAll('.dots__dot').forEach(dot => {
+      dot.classList.remove('dots__dot--active');
+    });
+
+    document
+      .querySelector(`.dots__dot[data-slide="${slide}"]`)
+      .classList.add('dots__dot--active');
+  };
+
+  const goToSlide = function (slide) {
+    slides.forEach(
+      (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
+    );
+  };
+
+  const init = function () {
+    goToSlide(0);
+    createDots();
+    activateDots(0);
+  };
+  init();
+
+  const nextSlide = function () {
+    if (currSlide === maxSlide - 1) {
+      currSlide = 0;
+    } else {
+      currSlide++;
+    }
+    goToSlide(currSlide);
+    activateDots(currSlide);
+  };
+
+  const prevSlide = function () {
+    if (currSlide === 0) {
+      currSlide = maxSlide - 1;
+    } else {
+      currSlide--;
+    }
+    goToSlide(currSlide);
+    activateDots(currSlide);
+  };
+
+  //Next slide
+  btnright.addEventListener('click', nextSlide);
+  btnleft.addEventListener('click', prevSlide);
+
+  document.addEventListener('keydown', function (e) {
+    e.key === 'ArrowRight' && nextSlide();
+    e.key === 'ArrowLeft' && prevSlide();
+  });
+
+  dotContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('dots__dot')) {
+      const { slide } = e.target.dataset;
+      goToSlide(slide);
+      activateDots(slide);
+    }
+  });
+};
+slider();
 ///////////////////////////////////////
 ///////////////////////////////////////
 //////////////////////////////////////
